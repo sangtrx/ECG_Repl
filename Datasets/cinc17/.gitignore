@@ -1,3 +1,4 @@
 REFERENCE-v3.csv
-*.json
+train.json
+test.json
 /training2017
