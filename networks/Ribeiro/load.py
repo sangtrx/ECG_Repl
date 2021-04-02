@@ -6,7 +6,7 @@ import random
 import scipy.io as sio
 import tqdm
 
-STEP = 256
+STEP = 4096
 
 def data_generator(batch_size, preproc, x, y):
     num_examples = len(x)
@@ -79,7 +79,7 @@ def load_ecg(record):
     return ecg[:trunc_samp]
 
 if __name__ == "__main__":
-    data_json = "examples/cinc17/train.json"
+    data_json = "/content/ECG_Repl/datasets/cinc17/train.json"
     train = load_dataset(data_json)
     preproc = Preproc(*train)
     gen = data_generator(32, preproc, *train)
