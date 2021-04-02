@@ -1,5 +1,5 @@
 import json
-import keras
+from tensorflow import keras
 import numpy as np
 import os
 import random
@@ -41,8 +41,7 @@ class Preproc:
     def process_y(self, y):
         # TODO, awni, fix hack pad with noise for cinc
         y = pad([[self.class_to_int[c] for c in s] for s in y], val=3, dtype=np.int32) 
-        y = keras.utils.np_utils.to_categorical(
-                y, num_classes=len(self.classes))
+        y = keras.utils.to_categorical(y, num_classes=len(self.classes))
         return y
 
 def pad(x, val=0, dtype=np.float32):
