@@ -5,7 +5,7 @@ import random
 import scipy.io as sio
 import tqdm
 
-STEP = 256
+STEP = 4096
 
 def load_ecg_mat(ecg_file):
     return sio.loadmat(ecg_file)['val'].squeeze()
@@ -22,7 +22,10 @@ def load_all(data_path):
         ecg_file = os.path.abspath(ecg_file)
         ecg = load_ecg_mat(ecg_file)
         num_labels = int(ecg.shape[0] / STEP)
-        dataset.append((ecg_file, [label]*num_labels))
+        if (num_labels > 1):
+          dataset.append((ecg_file, [label]*num_labels))
+        else:
+          dataset.append((ecg_file, [label]))
     return dataset
 
 def split(dataset, dev_frac):
@@ -44,7 +47,7 @@ if __name__ == "__main__":
     random.seed(2021)
 
     dev_frac = 0.1
-    data_path = "/content/ECG_Repl/Datasets/cinc17"
+    data_path = "/content/ECG_Repl/datasets/cinc17"
     dataset = load_all(data_path)
     train, dev = split(dataset, dev_frac)
     make_json("train.json", train)
