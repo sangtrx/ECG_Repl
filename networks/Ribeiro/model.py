@@ -5,41 +5,6 @@ import numpy as np
 
 
 class ResidualUnit(object):
-    """Residual unit block (unidimensional).
-    Parameters
-    ----------
-    n_samples_out: int
-        Number of output samples.
-    n_filters_out: int
-        Number of output filters.
-    kernel_initializer: str, optional
-        Initializer for the weights matrices. See Keras initializers. By default it uses
-        'he_normal'.
-    dropout_keep_prob: float [0, 1), optional
-        Dropout rate used in all Dropout layers. Default is 0.8
-    kernel_size: int, optional
-        Kernel size for convolutional layers. Default is 17.
-    preactivation: bool, optional
-        When preactivation is true use full preactivation architecture proposed
-        in [1]. Otherwise, use architecture proposed in the original ResNet
-        paper [2]. By default it is true.
-    postactivation_bn: bool, optional
-        Defines if you use batch normalization before or after the activation layer (there
-        seems to be some advantages in some cases:
-        https://github.com/ducha-aiki/caffenet-benchmark/blob/master/batchnorm.md).
-        If true, the batch normalization is used before the activation
-        function, otherwise the activation comes first, as it is usually done.
-        By default it is false.
-    activation_function: string, optional
-        Keras activation function to be used. By default 'relu'.
-    References
-    ----------
-    .. [1] K. He, X. Zhang, S. Ren, and J. Sun, "Identity Mappings in Deep Residual Networks,"
-           arXiv:1603.05027 [cs], Mar. 2016. https://arxiv.org/pdf/1603.05027.pdf.
-    .. [2] K. He, X. Zhang, S. Ren, and J. Sun, "Deep Residual Learning for Image Recognition," in 2016 IEEE Conference
-           on Computer Vision and Pattern Recognition (CVPR), 2016, pp. 770-778. https://arxiv.org/pdf/1512.03385.pdf
-    """
-
     def __init__(self, n_samples_out, n_filters_out, kernel_initializer='he_normal',
                  dropout_keep_prob=0.8, kernel_size=17, preactivation=True,
                  postactivation_bn=False, activation_function='relu'):
@@ -112,10 +77,10 @@ class ResidualUnit(object):
         return [x, y]
 
 
-def get_model(n_classes, last_layer='sigmoid'):
+def get_model(n_classes, input_shape ,last_layer='softmax'):
     kernel_size = 16
     kernel_initializer = 'he_normal'
-    signal = Input(shape=(4096, 12), dtype=np.float32, name='signal')
+    signal = Input(shape=input_shape, dtype=np.float32, name='signal')
     x = signal
     x = Conv1D(64, kernel_size, padding='same', use_bias=False,
                kernel_initializer=kernel_initializer)(x)
