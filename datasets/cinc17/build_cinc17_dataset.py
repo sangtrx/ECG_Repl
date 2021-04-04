@@ -22,10 +22,10 @@ def load_all(data_path):
         ecg_file = os.path.abspath(ecg_file)
         ecg = load_ecg_mat(ecg_file)
         num_labels = int(ecg.shape[0] / STEP)
-        if (num_labels > 1):
-          dataset.append((ecg_file, [label]*num_labels))
-        else:
-          dataset.append((ecg_file, [label]))
+        # if (num_labels > 1):
+        #   dataset.append((ecg_file, [label]*num_labels))
+        # else:
+        dataset.append((ecg_file, [label]))
     return dataset
 
 def split(dataset, dev_frac):
