@@ -30,3 +30,6 @@ rm -r china-physiological-signal-challenge-in-2018.zip
 kaggle datasets download -d bjoernjostein/physionet-snomed-mappings
 unzip -q physionet-snomed-mappings.zip -d .
 rm -r physionet-snomed-mappings.zip
+
+# build the cinc20 dataset
+python build_cinc20_dataset.py
