@@ -14,7 +14,7 @@ from sklearn.metrics import roc_auc_score
 from scipy.io import loadmat
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import StratifiedKFold
-
+from scipy import optimize
 
 def load_challenge_data(filename):
     x = loadmat(filename)
