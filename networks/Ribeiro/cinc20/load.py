@@ -92,8 +92,8 @@ def split_data(labels, y_all_combo):
     print("Validation split: {}".format(len(folds[0][1])))
     return folds
 
-def shuffle_batch_generator(batch_size, gen_x,gen_y): 
-    np.random.shuffle(order_array)
+def shuffle_batch_generator(batch_size, gen_x,gen_y, snomed_classes): 
+    # np.random.shuffle(order_array)
     batch_features = np.zeros((batch_size,5000, 12))
     batch_labels = np.zeros((batch_size,snomed_classes.shape[0])) #drop undef class
     while True:
@@ -104,14 +104,14 @@ def shuffle_batch_generator(batch_size, gen_x,gen_y):
             
         yield batch_features, batch_labels
 
-def generate_y_shuffle(y_train):
+def generate_y_shuffle(y_train, order_array):
     while True:
         for i in order_array:
             y_shuffled = y_train[i]
             yield y_shuffled
 
 
-def generate_X_shuffle(X_train):
+def generate_X_shuffle(X_train, order_array):
     while True:
         for i in order_array:
                 #if filepath.endswith(".mat"):
