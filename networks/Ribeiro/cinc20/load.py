@@ -454,9 +454,25 @@ def generate_validation_data(ecg_filenames, y,test_order_array):
 
     return X_train_gridsearch, y_train_gridsearch
 
+def split_data_opt(labels, y_all_combo):
+    folds = list(StratifiedKFold(n_splits=10, shuffle=True, random_state=42).split(labels,y_all_combo))
+    print("Training split: {}".format(len(folds[0][0])))
+    print("Validation split: {}".format(len(folds[0][1])))
+    return folds
 
-
-
+def iterate_threshold_new(y_true,y_pred):
+    init_thresholds = np.arange(0,1,0.05)
+    
+    all_scores = []
+    for i in init_thresholds:
+        pred_output = y_pred > i
+        pred_output = pred_output * 1
+        score = compute_challenge_metric_for_opt(y_true,pred_output)
+        print(score)
+        all_scores.append(score)
+    all_scores = np.asarray(all_scores)
+    
+    return all_scores
 
 
 
