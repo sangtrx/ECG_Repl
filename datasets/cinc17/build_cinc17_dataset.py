@@ -5,7 +5,7 @@ import random
 import scipy.io as sio
 import tqdm
 
-STEP = 4096
+STEP = 256
 
 def load_ecg_mat(ecg_file):
     return sio.loadmat(ecg_file)['val'].squeeze()
@@ -46,7 +46,7 @@ def make_json(save_path, dataset):
 if __name__ == "__main__":
     random.seed(2021)
 
-    dev_frac = 0.1
+    dev_frac = 0.3
     data_path = "/content/ECG_Repl/datasets/cinc17"
     dataset = load_all(data_path)
     train, dev = split(dataset, dev_frac)
