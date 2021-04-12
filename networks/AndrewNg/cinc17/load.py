@@ -42,7 +42,7 @@ class Preproc:
         # TODO, awni, fix hack pad with noise for cinc
         y = pad([[self.class_to_int[c] for c in s] for s in y], val=3, dtype=np.int32) 
         y = keras.utils.to_categorical(y, num_classes=len(self.classes))
-        return np.expand_dims(y, axis=1)
+        return y
 
 def pad(x, val=0, dtype=np.float32):
     max_len = max(len(i) for i in x)
@@ -62,15 +62,11 @@ def load_dataset(data_json):
   labels = []; ecgs = []
   for d in tqdm.tqdm(data):
     ecg = sio.loadmat(d['ecg'])['val'].squeeze()
-    num_seg = int(len(ecg) / STEP)
-
-    if (num_seg==0):
-      labels.append(d['labels'])
-      ecgs.append(ecg)
-    else:
-      for seg in range(num_seg):
-        labels.append(d['labels'])
-        ecgs.append(ecg[seg*STEP:(seg+1)*STEP])
+    trunc_samp = STEP * int(len(ecg) / STEP)
+    ecg =  ecg[:trunc_samp]
+    labels.append(d['labels'])
+    ecgs.append(ecg)
+    
   return ecgs, labels
     
 if __name__ == "__main__":

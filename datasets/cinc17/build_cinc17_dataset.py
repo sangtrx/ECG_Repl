@@ -23,16 +23,16 @@ def load_all(data_path):
         ecg = load_ecg_mat(ecg_file)
         num_labels = int(ecg.shape[0] / STEP)
         # if (num_labels > 1):
-        #   dataset.append((ecg_file, [label]*num_labels))
+        dataset.append((ecg_file, [label]*num_labels))
         # else:
-        dataset.append((ecg_file, [label]))
+        # dataset.append((ecg_file, [label]))
     return dataset
 
 def split(dataset, dev_frac):
     dev_cut = int(dev_frac * len(dataset))
     random.shuffle(dataset)
-    dev = dataset[:dev_cut]
-    train = dataset[dev_cut:]
+    train = dataset[:dev_cut]
+    dev = dataset[dev_cut:]
     return train, dev
 
 def make_json(save_path, dataset):
@@ -44,9 +44,9 @@ def make_json(save_path, dataset):
             fid.write('\n')
 
 if __name__ == "__main__":
-    random.seed(2021)
+    random.seed(2018)
 
-    dev_frac = 0.3
+    dev_frac = 0.1
     data_path = "/content/ECG_Repl/datasets/cinc17"
     dataset = load_all(data_path)
     train, dev = split(dataset, dev_frac)
