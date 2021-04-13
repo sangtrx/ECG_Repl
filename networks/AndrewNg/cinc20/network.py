@@ -1,4 +1,5 @@
 from keras import backend as K
+from tensorflow import keras 
 
 def _bn_relu(layer, dropout=0, **params):
     from keras.layers import BatchNormalization
@@ -106,8 +107,12 @@ def add_resnet_layers(layer, **params):
 
 def add_output_layer(layer, **params):
     from keras.layers.core import Dense, Activation
+    from keras.layers import Flatten 
     from keras.layers.wrappers import TimeDistributed
     layer = TimeDistributed(Dense(params["num_categories"]))(layer)
+    layer = Activation('softmax')(layer)
+    layer = Flatten()(layer)
+    layer = Dense(params["num_categories"])(layer)
     return Activation('softmax')(layer)
 
 def add_compile(model, **params):
