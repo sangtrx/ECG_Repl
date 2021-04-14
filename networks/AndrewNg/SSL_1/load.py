@@ -1,5 +1,5 @@
 import json
-import keras
+from tensorflow import keras
 import numpy as np
 import os
 import random
@@ -41,8 +41,7 @@ class Preproc:
     def process_y(self, y):
         # TODO, awni, fix hack pad with noise for cinc
         y = pad([[self.class_to_int[c] for c in s] for s in y], val=3, dtype=np.int32) 
-        y = keras.utils.np_utils.to_categorical(
-                y, num_classes=len(self.classes))
+        y = keras.utils.to_categorical(y, num_classes=len(self.classes))
         return y
 
 def pad(x, val=0, dtype=np.float32):
@@ -58,28 +57,20 @@ def compute_mean_std(x):
            np.std(x).astype(np.float32))
 
 def load_dataset(data_json):
-    with open(data_json, 'r') as fid:
-        data = [json.loads(l) for l in fid]
-    labels = []; ecgs = []
-    for d in tqdm.tqdm(data):
-        labels.append(d['labels'])
-        ecgs.append(load_ecg(d['ecg']))
-    return ecgs, labels
-
-def load_ecg(record):
-    if os.path.splitext(record)[1] == ".npy":
-        ecg = np.load(record)
-    elif os.path.splitext(record)[1] == ".mat":
-        ecg = sio.loadmat(record)['val'].squeeze()
-    else: # Assumes binary 16 bit integers
-        with open(record, 'r') as fid:
-            ecg = np.fromfile(fid, dtype=np.int16)
-
+  with open(data_json, 'r') as fid:
+    data = [json.loads(l) for l in fid]
+  labels = []; ecgs = []
+  for d in tqdm.tqdm(data):
+    ecg = sio.loadmat(d['ecg'])['val'].squeeze()
     trunc_samp = STEP * int(len(ecg) / STEP)
-    return ecg[:trunc_samp]
-
+    ecg =  ecg[:trunc_samp]
+    labels.append(d['labels'])
+    ecgs.append(ecg)
+    
+  return ecgs, labels
+    
 if __name__ == "__main__":
-    data_json = "examples/cinc17/train.json"
+    data_json = "/content/ECG_Repl/datasets/cinc17/train.json"
     train = load_dataset(data_json)
     preproc = Preproc(*train)
     gen = data_generator(32, preproc, *train)
