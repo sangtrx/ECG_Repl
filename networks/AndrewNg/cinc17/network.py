@@ -105,8 +105,15 @@ def add_resnet_layers(layer, **params):
     return layer
 
 def add_output_layer(layer, **params):
+    from keras.layers import LSTM, BatchNormalization
     from keras.layers.core import Dense, Activation
     from keras.layers.wrappers import TimeDistributed
+    # batch norm
+    layer = BatchNormalization()(layer)
+    layer = LSTM(256, return_sequences=True)(layer)
+    # batch norm
+    layer = BatchNormalization()(layer)
+    layer = LSTM(64, return_sequences=True)(layer)
     layer = TimeDistributed(Dense(params["num_categories"]))(layer)
     return Activation('softmax')(layer)
 
