@@ -110,9 +110,9 @@ def add_output_layer(layer, **params):
     from keras.layers import Flatten 
     from keras.layers.wrappers import TimeDistributed
     layer = TimeDistributed(Dense(params["num_categories"]))(layer)
-    layer = Activation('softmax')(layer)
-    layer = Flatten()(layer)
-    layer = Dense(params["num_categories"])(layer)
+    # layer = Activation('softmax')(layer)
+    # layer = Flatten()(layer)
+    # layer = Dense(params["num_categories"])(layer)
     return Activation('softmax')(layer)
 
 def add_compile(model, **params):
