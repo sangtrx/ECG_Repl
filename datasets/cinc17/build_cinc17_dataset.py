@@ -5,7 +5,7 @@ import random
 import scipy.io as sio
 import tqdm
 
-STEP = 256
+STEP = 2048
 
 def load_ecg_mat(ecg_file):
     return sio.loadmat(ecg_file)['val'].squeeze()
@@ -22,7 +22,8 @@ def load_all(data_path):
         ecg_file = os.path.abspath(ecg_file)
         ecg = load_ecg_mat(ecg_file)
         num_labels = int(ecg.shape[0] / STEP)
-        dataset.append((ecg_file, [label]*num_labels))
+        #dataset.append((ecg_file, [label]*num_labels))
+        dataset.append((ecg_file, [label]))
     return dataset
 
 def split(dataset, dev_frac):
