@@ -74,7 +74,7 @@ def split_data_opt(labels, y_all_combo):
 
 def shuffle_batch_generator_demo(batch_size, gen_x,gen_y, gen_z): 
     np.random.shuffle(order_array)
-    batch_features = np.zeros((batch_size,5000, 12))
+    batch_features = np.zeros((batch_size,4864, 12))
     batch_labels = np.zeros((batch_size,snomed_classes.shape[0])) #drop undef class
     batch_demo_data = np.zeros((batch_size,2))
     while True:
@@ -89,7 +89,7 @@ def shuffle_batch_generator_demo(batch_size, gen_x,gen_y, gen_z):
         
 def shuffle_batch_generator(batch_size, gen_x,gen_y): 
     np.random.shuffle(order_array)
-    batch_features = np.zeros((batch_size,5000, 12))
+    batch_features = np.zeros((batch_size,4864, 12))
     batch_labels = np.zeros((batch_size,snomed_classes.shape[0])) #drop undef class
     while True:
         for i in range(batch_size):

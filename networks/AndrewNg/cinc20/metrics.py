@@ -1,3 +1,5 @@
+from scipy import optimize
+
 def compute_challenge_metric_for_opt(labels, outputs):
     classes=['10370003','111975006','164889003','164890007','164909002','164917005','164934002','164947007','17338001',
  '251146004','270492004','284470004','39732003','426177001','426627000','426783006','427084000','427172004','427393009','445118002','47665007','59118001',
@@ -275,3 +277,38 @@ def compute_modified_confusion_matrix_nonorm(labels, outputs):
                         A[j, k] += 1.0#/normalization
 
     return A
+
+def thr_chall_metrics(thr, label, output_prob):
+    return -compute_challenge_metric_for_opt(label, np.array(output_prob>thr))
+
+def iterate_threshold(y_pred, ecg_filenames, y ,val_fold ):
+    init_thresholds = np.arange(0,1,0.05)
+    
+    all_scores = []
+    for i in init_thresholds:
+        pred_output = y_pred > i
+        pred_output = pred_output * 1
+        score = compute_challenge_metric_for_opt(generate_validation_data(ecg_filenames,y,val_fold)[1],pred_output)
+        print(score)
+        all_scores.append(score)
+    all_scores = np.asarray(all_scores)
+    
+    return all_scores
+
+def iterate_threshold_new(y_true,y_pred):
+    init_thresholds = np.arange(0,1,0.05)
+    
+    all_scores = []
+    for i in init_thresholds:
+        pred_output = y_pred > i
+        pred_output = pred_output * 1
+        score = compute_challenge_metric_for_opt(y_true,pred_output)
+        print(score)
+        all_scores.append(score)
+    all_scores = np.asarray(all_scores)
+    
+    return all_scores
+
+
+
+
