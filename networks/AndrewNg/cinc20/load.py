@@ -14,6 +14,8 @@ from scipy.io import loadmat
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import StratifiedKFold
 
+STEP = 4864
+
 def load_challenge_data(filename):
     x = loadmat(filename)
     data = np.asarray(x['val'], dtype=np.float64)
@@ -71,25 +73,10 @@ def split_data_opt(labels, y_all_combo):
     print("Training split: {}".format(len(folds[0][0])))
     print("Validation split: {}".format(len(folds[0][1])))
     return folds
-
-def shuffle_batch_generator_demo(batch_size, gen_x,gen_y, gen_z): 
-    np.random.shuffle(order_array)
-    batch_features = np.zeros((batch_size,4864, 12))
-    batch_labels = np.zeros((batch_size,snomed_classes.shape[0])) #drop undef class
-    batch_demo_data = np.zeros((batch_size,2))
-    while True:
-        for i in range(batch_size):
-
-            batch_features[i] = next(gen_x)
-            batch_labels[i] = next(gen_y)
-            batch_demo_data[i] = next(gen_z)
-
-        X_combined = [batch_features, batch_demo_data]
-        yield X_combined, batch_labels
         
-def shuffle_batch_generator(batch_size, gen_x,gen_y): 
+def shuffle_batch_generator(batch_size, gen_x,gen_y, order_array): 
     np.random.shuffle(order_array)
-    batch_features = np.zeros((batch_size,4864, 12))
+    batch_features = np.zeros((batch_size,STEP, 12))
     batch_labels = np.zeros((batch_size,snomed_classes.shape[0])) #drop undef class
     while True:
         for i in range(batch_size):
@@ -99,21 +86,21 @@ def shuffle_batch_generator(batch_size, gen_x,gen_y):
             
         yield batch_features, batch_labels
 
-def generate_y_shuffle(y_train):
+def generate_y_shuffle(y_train, order_array):
     while True:
         for i in order_array:
             y_shuffled = y_train[i]
             yield y_shuffled
 
 
-def generate_X_shuffle(X_train):
+def generate_X_shuffle(X_train, order_array):
     while True:
         for i in order_array:
-                #if filepath.endswith(".mat"):
-                    data, header_data = load_challenge_data(X_train[i])
-                    X_train_new = pad_sequences(data, maxlen=5000, truncating='post',padding="post")
-                    X_train_new = X_train_new.reshape(5000,12)
-                    yield X_train_new
+            #if filepath.endswith(".mat"):
+                data, header_data = load_challenge_data(X_train[i])
+                X_train_new = pad_sequences(data, maxlen=STEP, truncating='post',padding="post")
+                X_train_new = X_train_new.reshape(STEP,12)
+                yield X_train_new
 
 def calculating_class_weights(y_true):
     number_dim = np.shape(y_true)[1]
@@ -129,11 +116,11 @@ def generate_validation_data(ecg_filenames, y,test_order_array):
     ecg_train_timeseries=[]
     for names in ecg_filenames_train_gridsearch:
         data, header_data = load_challenge_data(names)
-        data = pad_sequences(data, maxlen=5000, truncating='post',padding="post")
+        data = pad_sequences(data, maxlen=STEP, truncating='post',padding="post")
         ecg_train_timeseries.append(data)
     X_train_gridsearch = np.asarray(ecg_train_timeseries)
 
-    X_train_gridsearch = X_train_gridsearch.reshape(ecg_filenames_train_gridsearch.shape[0],5000,12)
+    X_train_gridsearch = X_train_gridsearch.reshape(ecg_filenames_train_gridsearch.shape[0],STEP,12)
 
     return X_train_gridsearch, y_train_gridsearch
 

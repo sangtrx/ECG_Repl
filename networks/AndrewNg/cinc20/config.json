@@ -13,6 +13,6 @@
 
     "generator": true,
 
-    "input_shape": [4864, 12],
+    "input_shape": [null, 12],
     "num_categories": 27
 }
