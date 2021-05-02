@@ -75,31 +75,34 @@ def split_data_opt(labels, y_all_combo):
     return folds
         
 def shuffle_batch_generator(batch_size, gen_x, gen_y, order_array): 
-    np.random.shuffle(order_array)
+    # np.random.shuffle(order_array)
     batch_features = np.zeros((batch_size, STEP, 12))
-    batch_labels = np.zeros((batch_size, snomed_classes.shape[0])) #drop undef class
+    batch_labels = np.zeros((batch_size, 19, 27)) #drop undef class
     while True:
         for i in range(batch_size):
-
             batch_features[i] = next(gen_x)
             batch_labels[i] = next(gen_y)
             
         yield batch_features, batch_labels
 
-def generate_y_shuffle(y_train, order_array):
+def generate_y_shuffle(y_train, order_array, ecg_lengths):
     while True:
         for i in order_array:
-            y_shuffled = np.ones(shape=(19,27))*y_train[i]
+            trunc = int(ecg_lengths[i]/256)
+            if (trunc >= 19):
+                y_shuffled = np.ones(shape=(19,27))*y_train[i]
+            else: 
+                y_shuffled = np.concatenate((np.ones(shape=(trunc, 27))*y_train[i], np.zeros(shape=(19-trunc,27))), axis=0)
             yield y_shuffled
 
 def generate_X_shuffle(X_train, order_array):
     while True:
         for i in order_array:
             #if filepath.endswith(".mat"):
-                data, header_data = load_challenge_data(X_train[i])
-                X_train_new = pad_sequences(data, maxlen=STEP, truncating='post',padding="post")
-                X_train_new = X_train_new.reshape(STEP,12)
-                yield X_train_new
+            data, header_data = load_challenge_data(X_train[i])
+            X_train_new = pad_sequences(data, maxlen=STEP, truncating='post',padding="post")
+            X_train_new = X_train_new.reshape(STEP,12)
+            yield X_train_new
 
 def calculating_class_weights(y_true):
     number_dim = np.shape(y_true)[1]
