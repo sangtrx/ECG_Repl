@@ -26,8 +26,6 @@ def load_challenge_data(filename):
     return data, header_data
 
 def import_key_data(path):
-    gender=[]
-    age=[]
     labels=[]
     ecg_filenames=[]
     for subdir, dirs, files in sorted(os.walk(path)):
@@ -37,9 +35,7 @@ def import_key_data(path):
                 data, header_data = load_challenge_data(filepath)
                 labels.append(header_data[15][5:-1])
                 ecg_filenames.append(filepath)
-                gender.append(header_data[14][6:-1])
-                age.append(header_data[13][6:-1])
-    return gender, age, labels, ecg_filenames
+    return labels, ecg_filenames
 
 
 def make_undefined_class(labels, df_unscored):
@@ -112,32 +108,34 @@ def calculating_class_weights(y_true):
     return weights
 
 def generate_validation_data(ecg_filenames, y,test_order_array, ecg_lengths):
-    # y_train_gridsearch=y[test_order_array]
-    # ecg_filenames_train_gridsearch=ecg_filenames[test_order_array]
 
     ecg_train_timeseries=[]
+    y_train_timeseries=[]
     for i in test_order_array:
         data, header_data = load_challenge_data(ecg_filenames[i])
         data = pad_sequences(data, maxlen=STEP, truncating='post',padding="post")
         ecg_train_timeseries.append(data)
-    X_train_gridsearch = np.asarray(ecg_train_timeseries)
 
-    y_train_timeseries=[]
-    for i in test_order_array:
         trunc = int(ecg_lengths[i]/256)
         if (trunc >= 19):
             y_shuffled = np.ones(shape=(19,27))*y[i]
         else: 
             y_shuffled = np.concatenate((np.ones(shape=(trunc, 27))*y[i], np.zeros(shape=(19-trunc,27))), axis=0)
         y_train_timeseries.append(y_shuffled)
+    X_train_gridsearch = np.transpose(np.asarray(ecg_train_timeseries), axes=(0,2,1))
     y_train_gridsearch = np.asarray(y_train_timeseries)
-    
-    X_train_gridsearch = X_train_gridsearch.reshape(ecg_filenames_train_gridsearch.shape[0],STEP,12)
-    y_train_gridsearch = y_train_gridsearch.reshape(ecg_filenames_train_gridsearch.shape[0],19,12)
 
     return X_train_gridsearch, y_train_gridsearch
 
-
+def get_sginal_length(data_path):
+    signal_length=[]
+    for subdir, dirs, files in sorted(os.walk(data_path)):
+        for filename in files:
+            filepath = subdir + os.sep + filename
+            if filepath.endswith(".mat"):
+                data, header_data = load_challenge_data(filepath)
+                splitted = header_data[0].split()
+                signal_length.append(splitted[3])
 
 
 
