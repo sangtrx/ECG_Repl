@@ -113,22 +113,22 @@ def calculating_class_weights(y_true):
 
 def generate_validation_data(ecg_filenames, y,test_order_array, ecg_lengths):
     # y_train_gridsearch=y[test_order_array]
-    ecg_filenames_train_gridsearch=ecg_filenames[test_order_array]
+    # ecg_filenames_train_gridsearch=ecg_filenames[test_order_array]
 
     ecg_train_timeseries=[]
-    for names in ecg_filenames_train_gridsearch:
-        data, header_data = load_challenge_data(names)
+    for i in test_order_array:
+        data, header_data = load_challenge_data(ecg_filenames[i])
         data = pad_sequences(data, maxlen=STEP, truncating='post',padding="post")
         ecg_train_timeseries.append(data)
     X_train_gridsearch = np.asarray(ecg_train_timeseries)
 
     y_train_timeseries=[]
-    for i in order_array:
+    for i in test_order_array:
         trunc = int(ecg_lengths[i]/256)
         if (trunc >= 19):
-            y_shuffled = np.ones(shape=(19,27))*y_train[i]
+            y_shuffled = np.ones(shape=(19,27))*y[i]
         else: 
-            y_shuffled = np.concatenate((np.ones(shape=(trunc, 27))*y_train[i], np.zeros(shape=(19-trunc,27))), axis=0)
+            y_shuffled = np.concatenate((np.ones(shape=(trunc, 27))*y[i], np.zeros(shape=(19-trunc,27))), axis=0)
         y_train_timeseries.append(y_shuffled)
     y_train_gridsearch = np.asarray(y_train_timeseries)
     
