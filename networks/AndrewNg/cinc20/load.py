@@ -111,8 +111,8 @@ def calculating_class_weights(y_true):
         weights[i] = compute_class_weight('balanced', [0.,1.], y_true[:, i])
     return weights
 
-def generate_validation_data(ecg_filenames, y,test_order_array):
-    y_train_gridsearch=y[test_order_array]
+def generate_validation_data(ecg_filenames, y,test_order_array, ecg_lengths):
+    # y_train_gridsearch=y[test_order_array]
     ecg_filenames_train_gridsearch=ecg_filenames[test_order_array]
 
     ecg_train_timeseries=[]
@@ -122,7 +122,18 @@ def generate_validation_data(ecg_filenames, y,test_order_array):
         ecg_train_timeseries.append(data)
     X_train_gridsearch = np.asarray(ecg_train_timeseries)
 
+    y_train_timeseries=[]
+    for i in order_array:
+        trunc = int(ecg_lengths[i]/256)
+        if (trunc >= 19):
+            y_shuffled = np.ones(shape=(19,27))*y_train[i]
+        else: 
+            y_shuffled = np.concatenate((np.ones(shape=(trunc, 27))*y_train[i], np.zeros(shape=(19-trunc,27))), axis=0)
+        y_train_timeseries.append(y_shuffled)
+    y_train_gridsearch = np.asarray(y_train_timeseries)
+    
     X_train_gridsearch = X_train_gridsearch.reshape(ecg_filenames_train_gridsearch.shape[0],STEP,12)
+    y_train_gridsearch = y_train_gridsearch.reshape(ecg_filenames_train_gridsearch.shape[0],19,12)
 
     return X_train_gridsearch, y_train_gridsearch
 
