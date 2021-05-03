@@ -127,7 +127,7 @@ def generate_validation_data(ecg_filenames, y,test_order_array, ecg_lengths):
 
     return X_train_gridsearch, y_train_gridsearch
 
-def get_sginal_length(data_path):
+def get_signal_length(data_path):
     signal_length=[]
     for subdir, dirs, files in sorted(os.walk(data_path)):
         for filename in files:
@@ -136,6 +136,8 @@ def get_sginal_length(data_path):
                 data, header_data = load_challenge_data(filepath)
                 splitted = header_data[0].split()
                 signal_length.append(splitted[3])
+    
+    return signal_length
 
 
 
