@@ -113,7 +113,7 @@ def add_output_layer(layer, **params):
     # layer = Activation('softmax')(layer)
     # layer = Flatten()(layer)
     # layer = Dense(params["num_categories"])(layer)
-    return Activation('softmax')(layer)
+    return Activation('sigmoid')(layer)
 
 def add_compile(model, **params):
     from keras.optimizers import Adam

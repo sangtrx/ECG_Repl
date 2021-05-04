@@ -71,7 +71,7 @@ def split_data_opt(labels, y_all_combo):
     return folds
         
 def shuffle_batch_generator(batch_size, gen_x, gen_y, order_array): 
-    # np.random.shuffle(order_array)
+    np.random.shuffle(order_array)
     batch_features = np.zeros((batch_size, STEP, 12))
     batch_labels = np.zeros((batch_size, 19, 27)) #drop undef class
     while True:
