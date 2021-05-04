@@ -135,7 +135,7 @@ def get_signal_length(data_path):
             if filepath.endswith(".mat"):
                 data, header_data = load_challenge_data(filepath)
                 splitted = header_data[0].split()
-                signal_length.append(splitted[3])
+                signal_length.append(int(splitted[3]))
     
     return signal_length
 
