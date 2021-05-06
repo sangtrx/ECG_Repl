@@ -47,7 +47,8 @@ class ResidualUnit(object):
         """Residual unit."""
         x, y = inputs
         n_samples_in = y.shape[1]
-        downsample = n_samples_in // self.n_samples_out
+        # downsample = n_samples_in // self.n_samples_out
+        downsample = 2
         n_filters_in = y.shape[2]
         y = self._skip_connection(y, downsample, n_filters_in)
         # 1st layer
@@ -86,15 +87,41 @@ def get_model(n_classes, input_shape ,last_layer='softmax'):
                kernel_initializer=kernel_initializer)(x)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
+    # 1st residual block 
     x, y = ResidualUnit(1024, 128, kernel_size=kernel_size,
                         kernel_initializer=kernel_initializer)([x, x])
-    x, y = ResidualUnit(256, 196, kernel_size=kernel_size,
+    # 2nd residual block 
+    x, y = ResidualUnit(256, 256, kernel_size=kernel_size,
                         kernel_initializer=kernel_initializer)([x, y])
-    x, y = ResidualUnit(64, 256, kernel_size=kernel_size,
+    # 3rd residual block 
+    x, y = ResidualUnit(64, 384, kernel_size=kernel_size,
                         kernel_initializer=kernel_initializer)([x, y])
-    x, _ = ResidualUnit(16, 320, kernel_size=kernel_size,
+    # 4th residual block 
+    x, _ = ResidualUnit(16, 512, kernel_size=kernel_size,
                         kernel_initializer=kernel_initializer)([x, y])
+    # 5th residual block 
+    x, _ = ResidualUnit(4, 2048, kernel_size=kernel_size,
+                        kernel_initializer=kernel_initializer)([x, y])
+    # 6th residual block 
+    # x, _ = ResidualUnit(16, 1024, kernel_size=kernel_size,
+    #                     kernel_initializer=kernel_initializer)([x, y])
+    # 7th residual block 
+    # x, _ = ResidualUnit(16, 1536, kernel_size=kernel_size,
+    #                     kernel_initializer=kernel_initializer)([x, y])
+    # 8th residual block 
+    # x, _ = ResidualUnit(16, 1792, kernel_size=kernel_size,
+    #                     kernel_initializer=kernel_initializer)([x, y])
+    # 9th residual block 
+    # x, _ = ResidualUnit(16, 2048, kernel_size=kernel_size,
+    #                     kernel_initializer=kernel_initializer)([x, y])
+    # 10th residual block 
+    # x, _ = ResidualUnit(16, 2560, kernel_size=kernel_size,
+    #                     kernel_initializer=kernel_initializer)([x, y])
+
     x = Flatten()(x)
+    # x = Dense(2560, activation=last_layer, kernel_initializer=kernel_initializer)(x)
+    # x = Dense(512, activation=last_layer, kernel_initializer=kernel_initializer)(x)
+    # x = Dense(128, activation=last_layer, kernel_initializer=kernel_initializer)(x)
     diagn = Dense(n_classes, activation=last_layer, kernel_initializer=kernel_initializer)(x)
     model = Model(signal, diagn)
     return model
