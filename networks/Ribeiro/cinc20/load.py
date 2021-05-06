@@ -16,6 +16,8 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import StratifiedKFold
 from scipy import optimize
 
+STEP = 5000
+
 def load_challenge_data(filename):
     x = loadmat(filename)
     data = np.asarray(x['val'], dtype=np.float64)
@@ -94,7 +96,7 @@ def split_data(labels, y_all_combo):
 
 def shuffle_batch_generator(batch_size, gen_x,gen_y, snomed_classes): 
     # np.random.shuffle(order_array)
-    batch_features = np.zeros((batch_size,5000, 12))
+    batch_features = np.zeros((batch_size,STEP, 12))
     batch_labels = np.zeros((batch_size,snomed_classes.shape[0])) #drop undef class
     while True:
         for i in range(batch_size):
@@ -116,8 +118,8 @@ def generate_X_shuffle(X_train, order_array):
         for i in order_array:
                 #if filepath.endswith(".mat"):
                     data, header_data = load_challenge_data(X_train[i])
-                    X_train_new = pad_sequences(data, maxlen=5000, truncating='post',padding="post")
-                    X_train_new = X_train_new.reshape(5000,12)
+                    X_train_new = pad_sequences(data, maxlen=STEP, truncating='post',padding="post")
+                    X_train_new = X_train_new.reshape(STEP,12)
                     yield X_train_new
 
 def calculating_class_weights(y_true):
@@ -446,11 +448,11 @@ def generate_validation_data(ecg_filenames, y,test_order_array):
     ecg_train_timeseries=[]
     for names in ecg_filenames_train_gridsearch:
         data, header_data = load_challenge_data(names)
-        data = pad_sequences(data, maxlen=5000, truncating='post',padding="post")
+        data = pad_sequences(data, maxlen=STEP, truncating='post',padding="post")
         ecg_train_timeseries.append(data)
     X_train_gridsearch = np.asarray(ecg_train_timeseries)
 
-    X_train_gridsearch = X_train_gridsearch.reshape(ecg_filenames_train_gridsearch.shape[0],5000,12)
+    X_train_gridsearch = X_train_gridsearch.reshape(ecg_filenames_train_gridsearch.shape[0],STEP,12)
 
     return X_train_gridsearch, y_train_gridsearch
 

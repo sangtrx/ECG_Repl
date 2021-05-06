@@ -5,7 +5,7 @@ import numpy as np
 
 
 class ResidualUnit(object):
-    def __init__(self, n_samples_out, n_filters_out, kernel_initializer='he_normal',
+    def __init__(self, n_filters_out, kernel_initializer='he_normal',
                  dropout_keep_prob=0.8, kernel_size=17, preactivation=True,
                  postactivation_bn=False, activation_function='relu'):
         self.n_filters_out = n_filters_out
