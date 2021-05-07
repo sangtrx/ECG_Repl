@@ -119,9 +119,9 @@ def get_model(n_classes, input_shape ,last_layer='softmax'):
                         kernel_initializer=kernel_initializer)([x, y])
 
     x = Flatten()(x)
-    x = Dense(2560, activation=last_layer, kernel_initializer=kernel_initializer)(x)
-    x = Dense(512, activation=last_layer, kernel_initializer=kernel_initializer)(x)
-    x = Dense(128, activation=last_layer, kernel_initializer=kernel_initializer)(x)
+    x = Dense(2560, activation='relu', kernel_initializer=kernel_initializer)(x)
+    x = Dense(512, activation='relu', kernel_initializer=kernel_initializer)(x)
+    x = Dense(128, activation='relu', kernel_initializer=kernel_initializer)(x)
     output = Dense(n_classes, activation=last_layer, kernel_initializer=kernel_initializer)(x)
     model = Model(signal, output)
     return model
