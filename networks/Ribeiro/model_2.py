@@ -2,6 +2,7 @@ from tensorflow.keras.layers import (
     Input, Conv1D, MaxPooling1D, Dropout, BatchNormalization, Activation, Add, Flatten, Dense)
 from tensorflow.keras.models import Model
 import numpy as np
+import tensorflow_addons as tfa
 
 
 class ResidualUnit(object):
@@ -36,9 +37,19 @@ class ResidualUnit(object):
     def _batch_norm_plus_activation(self, x):
         if self.postactivation_bn:
             x = Activation(self.activation_function)(x)
-            x = BatchNormalization(center=False, scale=False)(x)
+            # x = BatchNormalization(center=False, scale=False)(x)
+            x = tfa.layers.InstanceNormalization(axis=2,
+                                                center=False,
+                                                scale=False,
+                                                beta_initializer=self.kernel_initializer,
+                                                gamma_initializer=self.kernel_initializer)(x)
         else:
-            x = BatchNormalization()(x)
+            # x = BatchNormalization()(x)
+            x = tfa.layers.InstanceNormalization(axis=2,
+                                                center=False,
+                                                scale=False,
+                                                beta_initializer=self.kernel_initializer,
+                                                gamma_initializer=self.kernel_initializer)(x)
             x = Activation(self.activation_function)(x)
         return x
 
@@ -67,7 +78,12 @@ class ResidualUnit(object):
             if self.dropout_rate > 0:
                 x = Dropout(self.dropout_rate)(x)
         else:
-            x = BatchNormalization()(x)
+            # x = BatchNormalization()(x)
+            x = tfa.layers.InstanceNormalization(axis=2,
+                                                center=False,
+                                                scale=False,
+                                                beta_initializer=self.kernel_initializer,
+                                                gamma_initializer=self.kernel_initializer)(x)
             x = Add()([x, y])  # Sum skip connection and main connection
             x = Activation(self.activation_function)(x)
             if self.dropout_rate > 0:
@@ -84,7 +100,12 @@ def get_model(n_classes, input_shape ,last_layer='softmax'):
     x = Conv1D(64, kernel_size, padding='same', use_bias=False,
             kernel_initializer=kernel_initializer)(x)
 
-    x = BatchNormalization()(x)
+    # x = BatchNormalization()(x)
+    x = tfa.layers.InstanceNormalization(axis=2,
+                                        center=False,
+                                        scale=False,
+                                        beta_initializer=self.kernel_initializer,
+                                        gamma_initializer=self.kernel_initializer)(x)
     x = Activation('relu')(x)
 
     # 1st residual block 
