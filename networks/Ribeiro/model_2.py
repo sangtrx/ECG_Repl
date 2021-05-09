@@ -3,6 +3,7 @@ from tensorflow.keras.layers import (
 from tensorflow.keras.models import Model
 import numpy as np
 import tensorflow_addons as tfa
+import tensorflow as tf
 
 
 class ResidualUnit(object):
@@ -36,7 +37,8 @@ class ResidualUnit(object):
 
     def _batch_norm_plus_activation(self, x):
         if self.postactivation_bn:
-            x = Activation(self.activation_function)(x)
+            # x = Activation(self.activation_function)(x)
+            x = tf.keras.layers.LeakyReLU(alpha=0.3)(x)
             # x = BatchNormalization(center=False, scale=False)(x)
             x = tfa.layers.InstanceNormalization(axis=2,
                                                 center=False,
@@ -50,7 +52,8 @@ class ResidualUnit(object):
                                                 scale=False,
                                                 beta_initializer=self.kernel_initializer,
                                                 gamma_initializer=self.kernel_initializer)(x)
-            x = Activation(self.activation_function)(x)
+            # x = Activation(self.activation_function)(x)
+            x = tf.keras.layers.LeakyReLU(alpha=0.3)(x)
         return x
 
     def __call__(self, inputs):
@@ -85,7 +88,8 @@ class ResidualUnit(object):
                                                 beta_initializer=self.kernel_initializer,
                                                 gamma_initializer=self.kernel_initializer)(x)
             x = Add()([x, y])  # Sum skip connection and main connection
-            x = Activation(self.activation_function)(x)
+            # x = Activation(self.activation_function)(x)
+            x = tf.keras.layers.LeakyReLU(alpha=0.3)(x)
             if self.dropout_rate > 0:
                 x = Dropout(self.dropout_rate)(x)
             y = x
@@ -104,9 +108,10 @@ def get_model(n_classes, input_shape ,last_layer='softmax'):
     x = tfa.layers.InstanceNormalization(axis=2,
                                         center=False,
                                         scale=False,
-                                        beta_initializer=self.kernel_initializer,
-                                        gamma_initializer=self.kernel_initializer)(x)
-    x = Activation('relu')(x)
+                                        beta_initializer=kernel_initializer,
+                                        gamma_initializer=kernel_initializer)(x)
+    # x = Activation('relu')(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.3)(x)
 
     # 1st residual block 
     x, y = ResidualUnit(128, kernel_size=kernel_size,
@@ -140,9 +145,12 @@ def get_model(n_classes, input_shape ,last_layer='softmax'):
                         kernel_initializer=kernel_initializer)([x, y])
 
     x = Flatten()(x)
-    x = Dense(2560, activation='relu', kernel_initializer=kernel_initializer)(x)
-    x = Dense(512, activation='relu', kernel_initializer=kernel_initializer)(x)
-    x = Dense(128, activation='relu', kernel_initializer=kernel_initializer)(x)
+    x = Dense(2560, activation=None, kernel_initializer=kernel_initializer)(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.3)(x)
+    x = Dense(512, activation=None, kernel_initializer=kernel_initializer)(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.3)(x)
+    x = Dense(128, activation=None, kernel_initializer=kernel_initializer)(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.3)(x)
     output = Dense(n_classes, activation=last_layer, kernel_initializer=kernel_initializer)(x)
     model = Model(signal, output)
     return model
