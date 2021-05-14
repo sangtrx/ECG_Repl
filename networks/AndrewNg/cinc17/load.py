@@ -6,7 +6,7 @@ import random
 import scipy.io as sio
 import tqdm
 
-STEP = 256
+STEP = 2048
 
 def data_generator(batch_size, preproc, x, y):
     num_examples = len(x)
@@ -62,15 +62,16 @@ def load_dataset(data_json):
   labels = []; ecgs = []
   for d in tqdm.tqdm(data):
     ecg = sio.loadmat(d['ecg'])['val'].squeeze()
-    trunc_samp = STEP * int(len(ecg) / STEP)
+    # trunc_samp = STEP * int(len(ecg) / STEP)
+    trunc_samp = STEP
     ecg =  ecg[:trunc_samp]
-    labels.append(d['labels'])
+    labels.append(d['labels']*2048)
     ecgs.append(ecg)
     
   return ecgs, labels
     
 if __name__ == "__main__":
-    data_json = "/content/ECG_Repl/datasets/cinc17/train.json"
+    data_json = "ECG_Repl/datasets/cinc17/train.json"
     train = load_dataset(data_json)
     preproc = Preproc(*train)
     gen = data_generator(32, preproc, *train)
