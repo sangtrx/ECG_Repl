@@ -45,7 +45,7 @@ if __name__ == "__main__":
     random.seed(2018)
 
     dev_frac = 0.1
-    data_path = "/content/ECG_Repl/datasets/cinc17"
+    data_path = ""
     dataset = load_all(data_path)
     train, dev = split(dataset, dev_frac)
     make_json("train.json", train)
